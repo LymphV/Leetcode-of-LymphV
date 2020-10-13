@@ -26,7 +26,50 @@
 #define FOR(x,y) for (int x = 0; x < y; ++x)
 #define ffor(x,y,z) for (int x = y; x < z; ++x)
 using pii = pair<int,int>;
-class Solution {///
+class Solution///188ms 6.74% 26.1M 5.01%
+{
+public:
+    vector<vector<int>> fourSum(vector<int>& ns, int target)
+    {
+        int n = ns.size();
+        if (n < 4) return vector<vector<int>> ();
+
+        sort(begin(ns), end(ns));
+        unordered_map<int,vector<pii>> mp;
+        vector<vector<int>> rst;
+        FOR(i,n)
+        {
+            int x = ns[i];
+            if (i && x == ns[i - 1])
+            {
+                ffor(j,i+1,n)
+                {
+                    int y = ns[j];
+                    if (i + 1 < j && y == ns[j - 1]) continue;
+
+                    if (mp.count(target - x - y))
+                    for (auto [p, q] : mp[target - x - y])
+                        if (q == i - 1) rst.push_back({ns[p],ns[q],x,y});
+                }
+            }
+            else ffor(j,i+1,n)
+            {
+                int y = ns[j];
+                if (i + 1 < j && y == ns[j - 1]) continue;
+
+                if (mp.count(target - x - y))
+                    for (auto [p, q] : mp[target - x - y])
+                        if (q < i) rst.push_back({ns[p],ns[q],x,y});
+                mp[x + y].push_back(pii(i, j));
+            }
+        }
+        return rst;
+    }
+};
+
+
+
+class SolutionV3 {///236 ms5.03% 26.2 MB5.06%
 public:
     vector<vector<int>> fourSum(vector<int>& nums, int target) {
         int n = nums.size();
