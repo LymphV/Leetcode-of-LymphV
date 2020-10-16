@@ -39,10 +39,270 @@
 
 #define FOR(x,y) for (int x = 0; x < y; ++x)
 #define ffor(x,y,z) for (int x = y; x < z; ++x)
+///树+剪枝,unordered_map
+class Solution ///236ms 57.14% 398.8M 5.00%
+{
+    unordered_map<int, unordered_map<char,int>> tree;
+    unordered_map<int, int> leaves;
 
+    int walk (string s, int i, int j)
+    {
+        int now = 0;
+        ffor(k,i,j)
+        {
+            auto & node = tree[now];
+            if (node.count(s[k]))
+                now = node[s[k]];
+            else return -1;
+        }
+
+        if (leaves.count(now)) return now;
+        return -1;
+    }
+public:
+    vector<int> findSubstring(string s, vector<string>& words) {
+        int m = s.size();
+        int nw = words.size();
+        if (!nw) return {};
+        int lw = words[0].size();
+        int n = lw * nw;
+        if (m < n) return {};
+
+
+        int cnt = 0;
+        nw = words.size();
+
+
+        FOR(i,nw)
+        {
+            int now = 0;
+            FOR(j,words[i].size())
+            {
+                int & next = tree[now][words[i][j]];
+                if (next) now = next;
+                else now = next = ++cnt;
+            }
+            ++leaves[now];
+        }
+
+
+        vector<int> rst;
+        FOR(i,lw)
+        {
+            unordered_map<int, int> cnt;
+            int start = 1;
+            for (int l = i, r = i + n; r <= m; l += lw, r += lw)
+            {
+                if (start)
+                {
+                    cnt.clear();
+                    start = 0;
+                    FOR(j,nw)
+                    {
+                        int leaf = walk(s, l + j * lw, l + j * lw + lw);
+                        if (~leaf) ++cnt[leaf];
+                        else
+                        {
+                            start = 1;
+                            l += j * lw;
+                            r = l + n;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    int leaf = walk(s, r - lw, r);
+                    if (~leaf) ++cnt[leaf];
+                    else
+                    {
+                        start = 1;
+                        l = r - lw;
+                        r = l + n;
+                    }
+                }
+                if (start) continue;
+
+                if (cnt == leaves) rst.emplace_back(l);
+
+                int leaf = walk(s, l, l + lw);
+                if (~leaf) --cnt[leaf];
+            }
+        }
+
+        return rst;
+    }
+};
+
+
+#define FOR(x,y) for (int x = 0; x < y; ++x)
+#define ffor(x,y,z) for (int x = y; x < z; ++x)
+
+///树+剪枝
+class SolutionV8 {///212ms 58.44% 387.4M 5.00%
+    using pic = pair<int,char>;
+
+    map<pic, int> tree;
+    unordered_map<int, int> leaves;
+
+    int walk (string s, int i, int j)
+    {
+        int now = 0;
+        ffor(k,i,j)
+        {
+            if (tree.count(pic(now,s[k])))
+                now = tree[pic(now,s[k])];
+            else return -1;
+        }
+
+        if (leaves.count(now)) return now;
+        return -1;
+    }
+
+
+public:
+    vector<int> findSubstring(string s, vector<string>& words) {
+        int m = s.size();
+        int nw = words.size();
+        if (!nw) return {};
+        int lw = words[0].size();
+        int n = lw * nw;
+        if (m < n) return {};
+
+
+        int cnt = 0;
+        nw = words.size();
+
+
+        FOR(i,nw)
+        {
+            int now = 0;
+            FOR(j,words[i].size())
+            {
+                int & next = tree[pic(now,words[i][j])];
+                if (next) now = next;
+                else now = next = ++cnt;
+            }
+            ++leaves[now];
+        }
+
+
+        vector<int> rst;
+        FOR(i,lw)
+        {
+            unordered_map<int, int> cnt;
+            int start = 1;
+            for (int l = i, r = i + n; r <= m; l += lw, r += lw)
+            {
+                if (start)
+                {
+                    cnt.clear();
+                    start = 0;
+                    FOR(j,nw)
+                    {
+                        int leaf = walk(s, l + j * lw, l + j * lw + lw);
+                        if (~leaf) ++cnt[leaf];
+                        else
+                        {
+                            start = 1;
+                            l += j * lw;
+                            r = l + n;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    int leaf = walk(s, r - lw, r);
+                    if (~leaf) ++cnt[leaf];
+                    else
+                    {
+                        start = 1;
+                        l = r - lw;
+                        r = l + n;
+                    }
+                }
+                if (start) continue;
+
+                if (cnt == leaves) rst.emplace_back(l);
+
+                int leaf = walk(s, l, l + lw);
+                if (~leaf) --cnt[leaf];
+            }
+        }
+
+        return rst;
+    }
+};
+
+
+
+
+///暴力2+再剪枝
+class SolutionV7 {///24ms 99.96% 14.4M 75.04%
+public:
+    vector<int> findSubstring(string s, vector<string>& words) {
+        int m = s.size();
+        int nw = words.size();
+        if (!nw) return {};
+        int lw = words[0].size();
+        int n = lw * nw;
+        if (m < n) return {};
+
+        unordered_map<string,int> mp;
+        FOR(i,nw) ++mp[words[i]];
+        vector<int> rst;
+        FOR(i,lw)
+        {
+            unordered_map<string, int> cnt;
+            int start = 1;
+            for (int l = i, r = i + n; r <= m; l += lw, r += lw)
+            {
+                if (start)
+                {
+                    cnt.clear();
+                    start = 0;
+                    FOR(j,nw)
+                    {
+                        auto now = begin(s) + l + j * lw;
+                        string snow = string(now, now + lw);
+                        if (mp.count(snow)) ++cnt[snow];
+                        else
+                        {
+                            start = 1;
+                            l += j * lw;
+                            r = l + n;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    auto now = begin(s) + r - lw;
+                    string snow = string(now, now + lw);
+                    if (mp.count(snow)) ++cnt[snow];
+                    else
+                    {
+                        start = 1;
+                        l = r - lw;
+                        r = l + n;
+                    }
+                }
+                if (start) continue;
+
+                if (cnt == mp) rst.emplace_back(l);
+
+                auto now = begin(s) + l;
+                string snow = string(now, now + lw);
+                if (mp.count(snow)) --cnt[snow];
+            }
+        }
+        return rst;
+    }
+};
 
 ///暴力2+剪枝
-class Solution {///68ms 78.40% 17.5M 64.23%
+class SolutionV6 {///68ms 78.40% 17.5M 64.23%
 
 public:
     vector<int> findSubstring(string s, vector<string>& words) {
