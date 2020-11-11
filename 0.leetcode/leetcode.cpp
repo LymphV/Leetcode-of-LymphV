@@ -1,5 +1,5 @@
 #if defined(LocalLymphV)
-#include "../leetcode.h"
+#include "../../leetcode.h"
 #include <LymphV>
 #else
 #define print(...) 0
