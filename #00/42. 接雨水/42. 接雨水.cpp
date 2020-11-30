@@ -41,8 +41,122 @@ n == height.length
 #define FOR(x,y) for (int x = 0; x < y; ++x)
 #define ffor(x,y,z) for (int x = y; x < z; ++x)
 
+///做减法,从左边遍历加从右边遍历等于总面积加原来图像加雨水数
+class Solution {///12ms 14.2M
+    using vi = vector<int>;
+    using itr = vi::iterator;
+
+public:
+    int trap(vector<int>& height) {
+        int n = height.size();
+        if (n < 3) return 0;
+        int rst, h1, h2;
+        rst = h1 = h2 = 0;
+        FOR(i,n)
+        {
+            h1 = max(h1, height[i]);
+            h2 = max(h2, height[n - i - 1]);
+            rst += h1 + h2 - height[i];
+        }
+
+        return rst - h1 * n;
+    }
+};
+
+
+///左右最大的max_element，无递归
+class SolutionV7 {///4ms 95.77% 14.5M 6.64%
+    using vi = vector<int>;
+    using itr = vi::iterator;
+
+    vi tot, leftMax, rightMax;
+
+    int solve (int h, int first, int last)
+    {
+        if (first - last == 1) return 0;
+        return h * (last - first - 1) - tot[last] + tot[first + 1];
+    }
+public:
+    int trap(vector<int>& height) {
+        int n = height.size();
+        if (n < 3) return 0;
+
+        tot = vector<int>(n + 1);
+        partial_sum(begin(height), end(height), begin(tot) + 1);
+
+        leftMax = vi(n), rightMax = vi(n);
+        leftMax[0] = 0, rightMax[n - 1] = n - 1;
+        for (int i = n - 2; 0 <= i; --i)
+            rightMax[i] = height[i] < height[rightMax[i + 1]] ? rightMax[i + 1] : i;
+        ffor(i,1,n) leftMax[i] = height[i] < height[leftMax[i - 1]] ? leftMax[i - 1] : i;
+
+        int rst = 0;
+        for (int i = rightMax[0]; 1 < i;)
+        {
+            int next = leftMax[i - 1];
+            rst += solve(height[next], next, i);
+            i = next;
+        }
+        for (int i = rightMax[0]; i < n - 2;)
+        {
+            int next = rightMax[i + 1];
+            rst += solve(height[next], i, next);
+            i = next;
+        }
+
+        return rst;
+    }
+};
+
+
+///左右最大的max_element
+class SolutionV6 {///8ms 63.36% 14.8M 5.00%
+    using vi = vector<int>;
+    using itr = vi::iterator;
+
+    vi tot, leftMax, rightMax;
+
+    int solve (int h, int first, int last)
+    {
+        if (first - last == 1) return 0;
+        return h * (last - first - 1) - tot[last] + tot[first + 1];
+    }
+
+    int solveLeft (itr start, int first, int last)
+    {
+        if (last - first < 2) return 0;
+        int mid = leftMax[last - 1];
+        return solve(*(start + mid), mid, last)  + solveLeft(start, first, mid);
+    }
+    int solveRight (itr start, int first, int last)
+    {
+        if (last - first < 2) return 0;
+        int mid = rightMax[first + 1];
+        return solve(*(start + mid), first, mid) + solveRight(start, mid, last);
+    }
+public:
+    int trap(vector<int>& height) {
+        int n = height.size();
+        if (n < 3) return 0;
+
+        tot = vector<int>(n + 1);
+        partial_sum(begin(height), end(height), begin(tot) + 1);
+
+        leftMax = vi(n), rightMax = vi(n);
+        leftMax[0] = 0, rightMax[n - 1] = n - 1;
+        for (int i = n - 2; 0 <= i; --i)
+            rightMax[i] = height[i] < height[rightMax[i + 1]] ? rightMax[i + 1] : i;
+        ffor(i,1,n) leftMax[i] = height[i] < height[leftMax[i - 1]] ? leftMax[i - 1] : i;
+print(rightMax);print(leftMax);
+        int mid = rightMax[0];
+        return solveLeft(begin(height), 0,  mid)
+              + solveRight(begin(height), mid, n - 1);
+    }
+};
+
+
 ///双指针
-class Solution {///16ms 14.15% 14.4M 8.00%
+class SolutionV5 {///16ms 14.15% 14.4M 8.00%
     using vi = vector<int>;
 public:
     int trap(vector<int>& height) {

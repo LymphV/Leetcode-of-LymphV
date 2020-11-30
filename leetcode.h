@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 struct ListNode {
     int val;
@@ -21,4 +22,18 @@ std::ostream & operator<< (std::ostream & out, ListNode * l)
 {
     return out << *l;
 }
+
+
+struct TreeNode {
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode(int x = 0, TreeNode * left = 0, TreeNode * right = 0) : val(x), left(left), right(right) {}
+    /*~TreeNode ()
+    {
+        delete left;
+        delete right;
+    }*/
+};
+
 
