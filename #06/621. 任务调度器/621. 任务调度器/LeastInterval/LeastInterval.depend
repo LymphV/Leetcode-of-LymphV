@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1607163384 source:c:\users\ict\lymphv\程序\程序oj2\leetcode\#06\621. 任务调度器\621. 任务调度器\leastinterval\src\solution.cpp
+	"Solution.h"
+
+1607163334 c:\users\ict\lymphv\程序\程序oj2\leetcode\#06\621. 任务调度器\621. 任务调度器\leastinterval\include\solution.h
+	"../../../../../leetcode.h"
+	<LymphV>
+
+1606220319 c:\users\ict\lymphv\程序\程序oj2\leetcode\leetcode.h
+	<iostream>
+	<vector>
+
