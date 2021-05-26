@@ -28,6 +28,7 @@ struct TreeNode {
     int val;
     TreeNode *left;
     TreeNode *right;
+    TreeNode() : val(0), left(nullptr), right(nullptr) {}
     TreeNode(int x = 0, TreeNode * left = 0, TreeNode * right = 0) : val(x), left(left), right(right) {}
     /*~TreeNode ()
     {
